@@ -5,7 +5,6 @@ import java.util.Random;
 public class User {
     private long userCard;
     private int userPin;
-    private long balance;
     private final Random random = new Random();
 
     protected User() {
@@ -20,7 +19,7 @@ public class User {
         userPin = random.nextInt(((9999 - 1000) + 1)) + 1000;
     }
 
-    private int algorithmLuhn () {
+    private int algorithmLuhn() {
         int sum = 0;
         long cloneCard = userCard;
         long number;
@@ -41,15 +40,11 @@ public class User {
         }
     }
 
-    protected long getUserCard() {
+    protected long getCardNumber() {
         return userCard;
     }
 
-    protected int getUserPin() {
+    protected int getPinNumber() {
         return userPin;
-    }
-
-    protected long getBalance() {
-        return balance;
     }
 }

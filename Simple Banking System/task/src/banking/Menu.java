@@ -4,38 +4,40 @@ import java.util.Scanner;
 
 public class Menu {
     private final Scanner scanner = new Scanner(System.in);
-    private static final User[] users = new User[50];
-    private static int usersNum = 0;
 
-    protected void start() {
-        boolean onOff = true;
-        while (onOff) {
-            System.out.println("1. Create an account\n" +
-                    "2. Log into account\n" +
-                    "0. Exit");
-            onOff = changeMenu();
+    protected void start(String fileName) {
+        try {
+            Connect connect = Connect.getInstance(fileName);
+            boolean onOff = true;
+            while (onOff) {
+                System.out.println("1. Create an account\n" +
+                        "2. Log into account\n" +
+                        "0. Exit");
+                onOff = changeMenu(connect);
+            }
+            System.out.print("\nBye!");
+            scanner.close();
+        } catch (Exception e) {
+            e.printStackTrace();
         }
-        System.out.print("\nBye!");
-        scanner.close();
     }
 
-    private boolean changeMenu() {
+    private boolean changeMenu(Connect connect) {
         switch (scanner.next()) {
             case "1":
-                users[usersNum] = new User();
-                usersNum++;
+                connect.addCard(new User());
                 return true;
             case "2":
                 System.out.println("\nEnter your card number:");
-                long numberCard = scanner.nextLong();
+                String numberCard = scanner.next();
                 System.out.println("Enter your PIN:");
-                return findUser(numberCard, scanner.nextInt());
+                return findUser(connect, numberCard, scanner.next());
             default:
                 return false;
         }
     }
 
-    private boolean secondMenu(int userId) {
+    private boolean secondMenu(Connect connect, String card) {
         boolean check = true;
         while (check) {
             System.out.println("\n1. Balance\n" +
@@ -43,7 +45,7 @@ public class Menu {
                     "0. Exit");
             switch (scanner.next()) {
                 case "1":
-                    System.out.println("\nBalance: " + users[userId].getBalance());
+                    connect.getBalance(card);
                     break;
                 case "2":
                     System.out.println("\nYou have successfully logged out!\n");
@@ -56,14 +58,12 @@ public class Menu {
         return false;
     }
 
-    private boolean findUser(long card, int pin) {
-        for (int i = 0; i < usersNum; i++) {
-            if (users[i].getUserCard() == card && users[i].getUserPin() == pin) {
-                System.out.println("\nYou have successfully logged in!");
-                return secondMenu(i);
-            } else {
-                System.out.println("Wrong card number or PIN!\n");
-            }
+    private boolean findUser(Connect connect, String card, String pin) {
+        if (connect.checkUser(card, pin)) {
+            System.out.println("\nYou have successfully logged in!");
+            return secondMenu(connect, card);
+        } else {
+            System.out.println("Wrong card number or PIN!\n");
         }
         return true;
     }
