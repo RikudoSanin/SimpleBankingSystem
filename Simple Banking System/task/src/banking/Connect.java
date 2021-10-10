@@ -88,4 +88,64 @@ public class Connect {
             e.printStackTrace();
         }
     }
+
+    protected void addIncome(String card, int money) {
+        String text = "UPDATE card SET balance = balance + " + money + " WHERE number = " + card;
+        try (Statement statement = this.connection.createStatement()) {
+            statement.executeUpdate(text);
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+    }
+
+    protected void closeAccount(String card) {
+        String text = "DELETE FROM card WHERE number = " + card;
+        try (Statement statement = this.connection.createStatement()) {
+            statement.execute(text);
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+    }
+
+    // Проверка номера карты
+    protected boolean checkCardNumber(String cardNumber) {
+        String text = "SELECT * FROM card WHERE number = " + cardNumber;
+        try (Statement statement = this.connection.createStatement()) {
+            try (ResultSet greatHouses = statement.executeQuery(text)) {
+                while (greatHouses.next()) {
+                    return true;
+                }
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return false;
+    }
+
+    // Проверка достаточно ли денег
+    protected boolean checkCardMoney(String cardNumber, int money) {
+        String text = "SELECT * FROM card WHERE number = " + cardNumber + " AND balance >= " + money;
+        try (Statement statement = this.connection.createStatement()) {
+            try (ResultSet greatHouses = statement.executeQuery(text)) {
+                while (greatHouses.next()) {
+                    return true;
+                }
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return false;
+    }
+
+    // Перевод денег
+    protected void transferMoney(String cardNumber1, String cardNumber2, int money) {
+        String text1 = "UPDATE card SET balance = balance - " + money + " WHERE number = " + cardNumber1;
+        String text2 = "UPDATE card SET balance = balance + " + money + " WHERE number = " + cardNumber2;
+        try (Statement statement = this.connection.createStatement()) {
+            statement.execute(text1);
+            statement.execute(text2);
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+    }
 }
